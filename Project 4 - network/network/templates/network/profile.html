@@ -1,0 +1,140 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <div style="margin-top:50px; text-align:center">
+        <h3>{{ userProfile }}</h3>
+        <hr>
+    </div>
+
+    <div style="margin-top:50px; text-align:center">
+        Followers: <strong id="followerCount">{{ followers }}</strong>
+        Following: <strong>{{ following }}</strong>
+        {% if user.is_authenticated and user.username != userProfile %}
+            {% if currentlyFollowingUser %}
+                <button id="followButton" data-action="unfollow">Unfollow</button>
+            {% else %}
+                <button id="followButton" data-action="follow">Follow</button>
+            {% endif %}
+        {% endif %}
+        <hr>
+    </div>
+
+    {% if user.is_authenticated %}
+        {% if user.username == userProfile %}
+        <div style="margin-top:20px; width:100%; height:100px;">
+            <div style="border:solid; border-radius:15px; border-width:2px; width:50%; height:100px; position:relative; margin:auto; text-align:center">
+                <form action="{% url 'index' %}" method="POST">
+                    {% csrf_token %}
+                    <textarea style="margin-top:5px; width:99%; height:50px; border:none; resize:none; outline:none;" maxlength=500 placeholder="What's on your mind?" name="body"></textarea>
+                    <input type="submit" value="Send it!">
+                </form> 
+            </div>
+        </div>
+        {% endif %}
+    {% endif %}
+
+    <div style="margin-top:50px; text-align:center">
+        {% for post in posts %}
+            <div class="post" id="post_{{ post.id }}">
+                <div style="font-weight:bold">
+                    <a href="{% url 'profile' post.user_id %}" style="color:purple">{{ post.user_id }}</a>
+                    {% if user == post.user_id %}
+                        <a name="edit_link" id="edit_link_{{ post.id }}" data-id="{{ post.id }}" href="#a" style="margin-left:20px; font-size:14px;">Edit Post </a>
+                    {% endif %}
+                </div>
+                <div name="post_body" id="post_body_{{ post.id }}" data-id="{{ post.id }}" style="flex-grow:1">{{ post.post }} </div>
+                <div style="color:rgb(0, 187, 255); font-size:12px;">{{ post.fmtTime }}</div>
+                {% if user.is_authenticated %}
+                <span style="font-size:14px">
+                    <strong>
+                        <span name="like_count" id="like_count_{{ post.id }}" data-id="{{ post.id }}">
+                            ###
+                        </span>
+                         people like this
+                    </strong>
+                    <a name="like_link" id="like_link_{{ post.id }}" data-id="{{ post.id }}" href="#a" style="margin-left:20px">Like</a>
+                </span>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        {% if posts.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ posts.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+
+        {% if posts.has_next %}
+            <a href="?page={{ posts.next_page_number }}">Next</a>
+            <a href="?page={{ posts.paginator.num_pages }}">Last</a>
+        {% endif %}
+    </div>
+
+    <br><br><br>
+
+    {% csrf_token %}
+
+    <script src="{% static 'network\posts.js' %}"></script>
+
+    <script>
+        document.querySelector('#followButton').addEventListener('click', followUnfollow);
+        let followerCount = parseInt('{{ followers }}');
+
+        function followUnfollow()
+        {
+            const profileName = '{{ userProfile }}';
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const button = document.querySelector('#followButton');
+            const followerCountElement = document.querySelector('#followerCount');
+
+            if (button.dataset.action === 'follow')
+            {
+                fetch("{% url 'follow' %}", {
+                    method:'POST',
+                    headers: {'X-CSRFToken':csrftoken},
+                    mode: 'same-origin',
+                    body: JSON.stringify({
+                        userToFollow:profileName
+                    })
+                })
+                .then((response) => response.json())
+                .then((result) => {
+                    console.log(result);
+                    if(result['message'] === 'success')
+                    {
+                        button.dataset.action = 'unfollow';
+                        button.innerHTML = "Unfollow";
+                        followerCount++;
+                        followerCountElement.innerHTML = followerCount;
+                    }
+                })
+            }
+            else if (button.dataset.action === 'unfollow')
+            {
+                fetch("{% url 'unfollow' %}", {
+                method:'POST',
+                headers: {'X-CSRFToken':csrftoken},
+                mode: 'same-origin',
+                body: JSON.stringify({
+                    userToFollow:profileName
+                })
+            })
+                .then((response) => response.json())
+                .then((result) => {
+                    console.log(result);
+                    if(result['message'] === 'success')
+                    {
+                        button.dataset.action = 'follow';
+                        button.innerHTML = 'Follow';
+                        followerCount--;
+                        followerCountElement.innerHTML = followerCount;
+                    }
+                })
+            }
+        }
+    </script>
+
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+Auctions
+{% endblock %}
+
+
+{% block body %}
+
+<h2 class="titleLeft">Active Listings</h2>
+
+<hr>
+
+    {% if listings %}
+        <table class="table table-dark table-striped align-middle">
+            <tbody>
+                {% for listing in listings %}
+                    <tr class="listingEntry">
+                        <td style="width: 10%; text-align:center">
+                            <div style="color:rgb(243, 223, 0)">
+                                {% if listing.category_id %}
+                                    {{ listing.category_id }}
+                                {% endif %}
+                            </div>
+                            <div>
+                                <a href="{% url 'listing' listing.title %}">{{listing.title}}</a>
+                            </div>
+                        </td>
+                        <td style="width: 10%">
+                            <div>                            
+                                {% if listing.image %}
+                                    <img src="{{listing.image}}" alt="listing image" width="200px" height="150px">
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td style="width: 50%">
+                            <div>
+                                {{listing.description}}
+                            </div>
+                        </td>
+                        <td style="width: 10%">
+                            <div style="font-weight: bold">
+                                {% if listing.price.last %}
+                                    {{listing.price.last}}
+                                {% else %}
+                                    ${{ listing.startingBid|floatformat:2 }}
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No listings to show.
+    {% endif %}
+
+{% endblock %}

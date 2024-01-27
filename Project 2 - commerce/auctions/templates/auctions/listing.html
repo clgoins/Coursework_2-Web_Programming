@@ -1,0 +1,126 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{ listing.title }}
+{% endblock %}
+
+{% block body %}
+
+    <h2 class="titleCenter">{{ listing.title }}</h2>
+
+    <hr>
+
+    <table class="table table-dark" style="text-align:center">
+        <tbody>
+            <tr>
+                <td>
+                    <div style="margin:25px">
+                        {% if listing.image %}
+                            <img src="{{listing.image}}" alt="listing image" width="400px" height="300px">
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div style="font-weight: bold; margin-bottom: 25px;">Item Description:</div>
+                    <div> {{ listing.description }} </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div style="font-weight:bold; margin:25px">
+                        {% if price %}
+                            Current Bid: {{ price }}
+                        {% else %}
+                            Starting Bid: ${{ listing.startingBid|floatformat:2 }}
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+
+            {% if user.is_authenticated %}
+                {% if listing.open %}
+                    <tr>
+                        <td>
+                            <div style="margin:25px; font-weight: bold">
+                                <form action="{% url 'listing' listing.title %}" method="POST">
+                                    {% csrf_token %}
+                                    $ <input name="bid" type="text" placeholder="0.00">
+                                    <input type="submit" value="Place Bid">
+                                </form>
+                            </div> 
+
+                            <div style="margin:25px">
+                                <form action="{% url 'listing' listing.title %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Add To Watchlist">
+                                    <input name="watchlist" value="{{ listing.title }}", type="hidden">
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% if listing.creator_id == user %}
+                        <tr>
+                            <td>
+                                <div style="margin:25px">
+                                    <form action="{% url 'listing' listing.title %}" method="POST">
+                                        {% csrf_token %}
+                                        <input type="submit" value="Close Auction" style="color:red">
+                                        <input type="hidden" name="close" value="{{ listing.title }}">
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endif %}
+
+                <tr>
+                    <td>
+                        <div style="margin:25px">
+                            <form action="{% url 'listing' listing.title %}" method="POST">
+                                {% csrf_token %}
+                                <textarea name="comment" placeholder="Leave a comment..." style="width:400px; height:100px; margin:15px"></textarea>
+                                <br>
+                                <input type="submit" value="Post Comment">
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endif %}
+
+            {% if comments %}
+                <table class="table table-dark table-striped" style="text-align:center">
+                    <thead>
+                        <th style="font-size:24px; font-weight:bold">
+                            Comments:
+                        </th>
+                    </thead>
+                    
+                    {% for comment in comments %}
+                        <tr>
+                            <td>
+                                <div style="color:rgb(243, 223, 0)">
+                                    {{ comment.user_id }}:
+                                </div> 
+                                    {{ comment }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <tr>
+                    <td>
+                        <div style="text-align:center; font-weight: bold;"> No comments to show. </div>
+                    </td>
+                </tr>
+            {% endif %}
+
+            </tbody>
+    </table>
+
+    
+
+
+    
+{% endblock %}

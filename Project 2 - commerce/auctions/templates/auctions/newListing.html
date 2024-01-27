@@ -1,0 +1,81 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+New Listing
+{% endblock %}
+
+
+{% block body %}
+
+<style>
+    td {
+        width: 50%;
+        font-weight: bold;
+    }
+
+    tr {
+        margin: 25px;
+    }
+
+</style>
+
+<h2 class="titleCenter">Create New Listing</h2>
+
+<hr>
+
+<form action="{% url 'new' %}" method="POST">
+    {% csrf_token %}
+    <table class="table table-dark table-striped align-middle">
+        <tr>
+            <td style="text-align:right">
+                Listing Title<span style="color:red">*</span>
+            </td>
+            <td style="text-align:left">                
+                <input autofocus id="titleField" name="title" placeholder="Listing Title" style="width:50%" type="text" value="{{ request.POST.title }}">
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align:right">
+                Item Description<span style="color:red">*</span>
+            </td>
+            <td style="text-align:left">
+                <textarea id="descField" maxlength="280" name="description" placeholder="Item Description" style="height:150px; width:50%">{{ request.POST.description }}</textarea>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align:right">
+                Starting Bid<span style="color:red">*</span>
+            </td>
+            <td style="text-align:left">
+                    <input id="bidField" name="startingBid" placeholder="Starting Bid" style="width:50%" type="text" value="{{ request.POST.startingBid }}">
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align:right">
+                Image URL (Optional)
+            </td>
+            <td style="text-align:left">
+                    <input id="imgField" name="imgURL" placeholder="Image URL" style="width:50%" type="text" value="{{ request.POST.imgURL }}">
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align:right">
+                Select Category (Optional)
+            </td>
+            <td style="text-align:left">
+                    <select name="category" style="width:50%" >
+                        <option selected>Select Category (Optional)</option>
+                        {% for category in categories %}
+                            <option> {{ category }} </option>
+                        {% endfor %}
+                    </select>
+            </td>
+        </tr>
+    </table>
+    <div class="align-middle" style="text-align: center;">
+        <input type="submit" value="Save Listing">
+    </div>
+    
+</form>
+
+{% endblock %}

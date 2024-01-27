@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Image Search</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+
+    <body>
+
+        <div class="linkText">
+            <a href="index.html">Basic Search</a>
+            <br>
+            Image Search
+            <br>
+            <a href="advanced.html">Advanced Search</a>
+            <br>
+        </div>
+
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+
+        <div class="logoContainer">
+            <img class="logo" src="img/image_logo.png" alt="Artist's recreation of an ancient Google logo">
+        </div>
+
+        <div class="basicSearchContainer">
+            <form action="https://google.com/search" method="GET">
+                <input class="basicSearchInput" type="text" name="q">
+                <br>
+                <!--button should be centered and beneath the text input-->
+                <div class="searchButtonContainer">
+                    <input class="searchButton" type="submit" value="Image Search">
+                </div>
+                <input type="hidden" name="tbm" value="isch">
+            </form>
+        </div>
+
+    </body>
+
+</html>

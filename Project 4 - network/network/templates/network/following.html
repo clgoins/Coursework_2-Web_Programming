@@ -1,0 +1,54 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <div style="margin-top:50px; text-align:center">
+        <h3>People You Follow</h3>
+        <hr>
+    </div>
+
+    <div style="margin-top:50px; text-align:center">
+        {% for post in posts %}
+            <div class="post" id="post_{{ post.id }}">
+                <div style="font-weight:bold">
+                    <a href="{% url 'profile' post.user_id %}" style="color:purple">{{ post.user_id }}</a>
+                    {% if user == post.user_id %}
+                        <a name="edit_link" id="edit_link_{{ post.id }}" data-id="{{ post.id }}" href="#a" style="margin-left:20px; font-size:14px;">Edit Post </a>
+                    {% endif %}
+                </div>
+                <div name="post_body" id="post_body_{{ post.id }}" data-id="{{ post.id }}" style="flex-grow:1">{{ post.post }} </div>
+                <div style="color:rgb(0, 187, 255); font-size:12px;">{{ post.fmtTime }}</div>
+                {% if user.is_authenticated %}
+                <span style="font-size:14px">
+                    <strong>
+                        <span name="like_count" id="like_count_{{ post.id }}" data-id="{{ post.id }}">
+                            ###
+                        </span>
+                         people like this
+                    </strong>
+                    <a name="like_link" id="like_link_{{ post.id }}" data-id="{{ post.id }}" href="#a" style="margin-left:20px">Like</a>
+                </span>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        {% if posts.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ posts.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+
+        {% if posts.has_next %}
+            <a href="?page={{ posts.next_page_number }}">Next</a>
+            <a href="?page={{ posts.paginator.num_pages }}">Last</a>
+        {% endif %}
+
+    </div>
+
+    <br><br><br>
+
+    {% csrf_token %}
+
+    <script src="{% static 'network/posts.js' %}"></script>
+{% endblock %}

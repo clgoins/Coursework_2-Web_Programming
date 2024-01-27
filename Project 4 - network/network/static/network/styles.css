@@ -1,0 +1,14 @@
+.post {
+    background-color:rgb(241, 241, 241); 
+    border-radius:15px; 
+    width:50%; 
+    min-height:110px; 
+    margin:auto; 
+    margin-bottom:15px; 
+    text-align:left; 
+    padding:8px;
+    padding-left:15px; 
+    position:relative;
+    display:flex;
+    flex-direction:column;
+}

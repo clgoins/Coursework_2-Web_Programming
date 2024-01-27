@@ -1,0 +1,60 @@
+{% extends 'auctions/layout.html' %}
+
+{% block title %}
+Watchlist
+{% endblock %}
+
+{% block body %}
+
+<h2 class="titleLeft">Watchlist: </h2>
+<hr>
+
+    {% if watchedItems %}
+        <table class="table table-dark table-striped">
+            <tbody>
+                {% for item in watchedItems %}
+                    <tr class="listingEntry">
+                        <td class="align-middle" style="width: 10%; text-align:center">
+                            <div style="color:rgb(243, 223, 0)">
+                                {% if item.listing_id.category_id %}
+                                    {{ item.listing_id.category_id }}
+                                {% endif %}
+                            </div>
+                            <div>
+                                <a href="listing/{{item.listing_id.title}}">{{item.listing_id.title}}</a>
+                            </div>
+                        </td>
+                        <td style="width: 10%;">
+                            {% if item.listing_id.image %}
+                                <img src="{{item.listing_id.image}}" alt="listing image" width="200px" height="150px">
+                            {% endif %}
+                        </td>
+                        <td class="align-middle" style="width: 50%">
+                            <div>
+                                {{item.listing_id.description}}
+                            </div>
+                        </td>
+                        <td class="align-middle" style="width: 10%">
+                            <div style="font-weight: bold">
+                                {% if item.listing_id.price.last %}
+                                    {{item.listing_id.price.last}}
+                                {% else %}
+                                    ${{ item.listing_id.startingBid|floatformat:2 }}
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="align-middle">
+                            <form action="{% url 'watchlist' %}" method="POST"> 
+                                {% csrf_token %}
+                                <input type="submit" value="Remove" style="color:red">
+                                <input type="hidden" name="remove" value="{{item.listing_id}}">
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        No listings to show.
+    {% endif %}
+{% endblock %}
